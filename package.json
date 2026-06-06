@@ -1,0 +1,16 @@
+{
+  "name": "shopping-listapp",
+  "version": "1.0.0",
+  "description": "한국어 쇼핑 리스트 앱 - localStorage 기반의 단일 파일 웹앱",
+  "main": "index.html",
+  "scripts": {
+    "test": "playwright test shopping.test.js"
+  },
+  "keywords": ["shopping", "list", "webapp"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}
