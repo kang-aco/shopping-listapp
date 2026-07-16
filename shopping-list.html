@@ -169,6 +169,16 @@
       padding: 32px 0;
       font-size: 0.95rem;
     }
+
+    .status-bar {
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .status-bar.ok  { background: #edf7ed; color: #276749; display: block; }
+    .status-bar.err { background: #fff5f5; color: #c53030; display: block; }
   </style>
 </head>
 <body>
@@ -180,6 +190,7 @@
       <button id="addBtn" title="추가">＋</button>
     </div>
 
+    <div class="status-bar" id="statusBar"></div>
     <div class="stats" id="stats"></div>
     <ul id="list"></ul>
 
@@ -194,11 +205,17 @@
     const { createClient } = supabase;
     const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const inputEl  = document.getElementById('itemInput');
-    const addBtn   = document.getElementById('addBtn');
-    const listEl   = document.getElementById('list');
-    const statsEl  = document.getElementById('stats');
-    const clearBtn = document.getElementById('clearBtn');
+    const inputEl   = document.getElementById('itemInput');
+    const addBtn    = document.getElementById('addBtn');
+    const listEl    = document.getElementById('list');
+    const statsEl   = document.getElementById('stats');
+    const clearBtn  = document.getElementById('clearBtn');
+    const statusBar = document.getElementById('statusBar');
+
+    function showStatus(msg, isError = false) {
+      statusBar.textContent = msg;
+      statusBar.className = 'status-bar ' + (isError ? 'err' : 'ok');
+    }
 
     let items = [];
 
@@ -210,9 +227,11 @@
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('로드 실패:', error);
+        showStatus('DB 연결 실패: ' + (error.message || JSON.stringify(error)), true);
+        listEl.innerHTML = '';
         return;
       }
+      showStatus('Supabase 연결 성공 ✓');
       items = data || [];
       render();
     }
@@ -274,7 +293,7 @@
 
       addBtn.disabled = false;
 
-      if (error) { console.error('추가 실패:', error); return; }
+      if (error) { showStatus('추가 실패: ' + (error.message || JSON.stringify(error)), true); return; }
 
       items.unshift(data);
       render();
